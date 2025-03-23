@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Hacker</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Silkscreen&display=swap');
+        body {
+            background-color: black;
+            color: #0f0;
+            font-family: 'Silkscreen', monospace;
+            text-align: center;
+            padding: 50px;
+        }
+        .terminal {
+            width: 80%;
+            max-width: 600px;
+            background: #111;
+            padding: 20px;
+            border: 2px solid #0f0;
+            text-align: left;
+            margin: auto;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .input-line {
+            display: flex;
+        }
+        .input-line span {
+            color: #0a0;
+            margin-right: 5px;
+        }
+        input {
+            background: none;
+            border: none;
+            color: #0f0;
+            font-family: 'Silkscreen', monospace;
+            width: 100%;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Terminal Hacker</h1>
+    <div class="terminal" id="terminal">
+        <p>Bienvenido, agente. Usa los comandos correctos para encontrar la clave secreta.</p>
+    </div>
+    <div class="input-line">
+        <span id="currentPath">/root$</span>
+        <input type="text" id="commandInput" autofocus>
+    </div>
+
+    <script>
+        const terminal = document.getElementById("terminal");
+        const input = document.getElementById("commandInput");
+        const currentPathDisplay = document.getElementById("currentPath");
+        let currentPath = "/root";
+        let sudoExecuted = false;
+        let rootDecoded = false; // Variable para controlar si root está descifrado
+        let rootPassword = "2761"; // Contraseña para ejecutar el archivo h4ck.exe
+        let rootPasswordEntered = false; // Para comprobar si la contraseña ya fue ingresada
+        let canExecuteDecrypt = false;
+
+        // Sistema de archivos
+        const fileSystem = {
+            "root": {
+                "users": {
+                    "destro7ed": {
+                        "secret.txt": "HQL3UQM2C2RP3P"
+                    },
+                    "j03lr4m0s": {},
+                    "root": {
+                        "isEncrypted": true, // Este archivo no debería estar aquí
+                        "new_user.py": "print('Exploit ejecutado con éxito!')",
+                    }
+                }
+            }
+        };
+
+        // Función para agregar una línea a la terminal
+        function addLine(text) {
+            terminal.innerHTML += `<p>${text}</p>`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Procesar comandos de entrada
+        input.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                let command = input.value.trim();
+                addLine(`${currentPath}$ ${command}`);
+                input.value = "";
+                handleCommand(command);
+            }
+        });
+
+        // Resolver la ruta en el sistema de archivos
+        function resolvePath(path) {
+            let parts = path.split("/").filter(p => p);
+            let current = fileSystem;
+            for (let part of parts) {
+                if (current[part]) {
+                    current = current[part];
+                } else {
+                    return null;
+                }
+            }
+            return current;
+        }
+
+        // Listar archivos en el directorio
+        function listDirectory() {
+            let dir = resolvePath(currentPath.slice(1));
+            if (dir && typeof dir === "object") {
+                addLine(Object.keys(dir).join("  ") || "(vacío)");
+            } else {
+                addLine("Error: Directorio no encontrado.");
+            }
+        }
+
+        // Cambiar de directorio
+        function changeDirectory(dirName) {
+            if (dirName === "root" && !rootDecoded) {
+                addLine("Error: El usuario 'root' está cifrado. Usa 'decode root' para descifrarlo.");
+                return;
+            }
+
+            if (dirName === "root" && rootDecoded) {
+                currentPath = "/root/users/root";
+                currentPathDisplay.textContent = `${currentPath}$`;
+            } else if (!dirName || dirName === "..") {
+                let parts = currentPath.split("/").filter(p => p);
+                if (parts.length > 1) {
+                    parts.pop();
+                    currentPath = "/" + parts.join("/");
+                }
+            } else {
+                let newPath = `${currentPath}/${dirName}`.replace("//", "/");
+                if (resolvePath(newPath.slice(1))) {
+                    currentPath = newPath;
+                } else {
+                    addLine("Error: Directorio no encontrado.");
+                    return;
+                }
+            }
+            currentPathDisplay.textContent = `${currentPath}$`;
+        }
+
+        // Leer el contenido de un archivo
+        function readFile(fileName) {
+            let file = resolvePath(`${currentPath.slice(1)}/${fileName}`);
+            if (file) {
+                addLine(file);
+            } else {
+                addLine("Error: Archivo no encontrado.");
+            }
+        }
+
+        // Ejecutar el comando 'sudo destro7ed'
+        function sudoDestro7ed() {
+            if (!sudoExecuted) {
+                sudoExecuted = true;
+                addLine("Comando 'sudo destro7ed' ejecutado correctamente. Ahora puedes usar decrypt.");
+            } else {
+                addLine("Ya has ejecutado 'sudo destro7ed'.");
+            }
+        }
+
+        // Comando para ejecutar 'decrypt'
+        function decryptFile(fileName) {
+            if (sudoExecuted) {
+                if (fileName === "secret.txt") {
+                    addLine("Texto cifrado descifrado: P4ssw0rd: 2761");
+                } else {
+                    addLine("Error: No se puede descifrar este archivo.");
+                }
+            } else {
+                addLine("Error: Necesitas ejecutar 'sudo destro7ed' para poder usar decrypt.");
+            }
+        }
+
+        // Comando para decodificar 'root'
+        function decodeRoot() {
+            if (!rootDecoded) {
+                rootDecoded = true;
+                addLine("Usuario 'root' descifrado correctamente.");
+                // Ahora se agrega el archivo h4ck.exe cuando root es descifrado
+                
+            } else {
+                addLine("El usuario 'root' ya ha sido descifrado.");
+            }
+        }
+
+// Función para ejecutar un archivo
+function executeFile(fileName) {
+    if (fileName === "h4ck.exe") {
+        // Mostrar popup para ingresar la contraseña
+        showPasswordPopup();
+    } else if (fileName === "new_user.py") {
+        addLine("Ejecutando exploit...");
+        setTimeout(() => {
+            addLine("Script finalizado. Usuario 'unknown' creado.");
+            fileSystem.root.users["unknown"] = {
+                "h4ck.exe": "redirects to paginaX.html"
+            };
+        }, 2000);
+    } else {
+        addLine("Error: No se puede ejecutar este archivo.");
+    }
+}
+
+// Función para mostrar el popup de contraseña
+function showPasswordPopup() {
+    // Crear el popup de contraseña
+    const popup = document.createElement("div");
+    popup.style.position = "fixed";
+    popup.style.top = "50%";
+    popup.style.left = "50%";
+    popup.style.transform = "translate(-50%, -50%)";
+    popup.style.padding = "20px";
+    popup.style.backgroundColor = "#111";
+    popup.style.border = "2px solid #0f0";
+    popup.style.zIndex = "1000";
+
+    // Título del popup
+    const title = document.createElement("h2");
+    title.textContent = "Ingrese la contraseña";
+    title.style.color = "#0f0";
+    popup.appendChild(title);
+
+    // Campo para ingresar la contraseña
+    const input = document.createElement("input");
+    input.type = "password";
+    input.style.background = "none";
+    input.style.border = "1px solid #0f0";
+    input.style.color = "#0f0";
+    input.style.fontFamily = "'Silkscreen', monospace";
+    input.style.marginRight = "10px";
+    input.style.padding = "5px";
+    popup.appendChild(input);
+
+    // Botón de ejecutar
+    const button = document.createElement("button");
+    button.textContent = "Ejecutar";
+    button.style.backgroundColor = "#0f0";
+    button.style.border = "none";
+    button.style.color = "#111";
+    button.style.padding = "10px";
+    button.style.cursor = "pointer";
+    popup.appendChild(button);
+
+    // Agregar el popup al body
+    document.body.appendChild(popup);
+
+    // Manejar el evento de clic en el botón
+    button.addEventListener("click", function() {
+        const enteredPassword = input.value.trim();
+        if (enteredPassword === "2761") {
+            // Cerrar el popup
+            document.body.removeChild(popup);
+
+            // Mostrar simulación de hackeo (Matrix) por 10 segundos
+            startMatrixHack();
+
+            // Simular hackeo durante 10 segundos antes de redirigir
+            setTimeout(() => {
+                window.location.href = "pageX.html";
+            }, 10000); // Redirige después de 10 segundos
+        } else {
+            addLine("Contraseña incorrecta.");
+            document.body.removeChild(popup); // Cerrar el popup
+        }
+    });
+}
+
+// Función para mostrar el hackeo estilo Matrix
+function startMatrixHack() {
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.position = "fixed";
+    canvas.style.top = 0;
+    canvas.style.left = 0;
+    canvas.style.zIndex = "999";  // Asegurarse de que esté sobre la terminal y el contenido
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d");
+
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const fontSize = 18;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    // Inicializar las columnas
+    for (let i = 0; i < columns; i++) {
+        drops.push(0);
+    }
+
+    // Función de animación
+    function drawMatrix() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#0f0"; // Color verde Matrix
+        ctx.font = `${fontSize}px monospace`;
+
+        // Dibujar caracteres
+        for (let i = 0; i < drops.length; i++) {
+            const char = characters[Math.floor(Math.random() * characters.length)];
+            ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+            // Restablecer el punto de caída si llega al fondo
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+
+            // Incrementar el valor de la caída
+            drops[i]++;
+        }
+    }
+
+    // Iniciar la animación
+    const interval = setInterval(drawMatrix, 50);
+
+    // Detener la animación después de 10 segundos
+    setTimeout(() => {
+        clearInterval(interval);
+        document.body.removeChild(canvas); // Eliminar el canvas después de la animación
+    }, 10000);
+}
+
+
+        // Comando para acceder al archivo 'h4ck.exe'
+        function accessExeFile(password) {
+            if (password === rootPassword) {
+                addLine("Contraseña correcta. El archivo 'h4ck.exe' se está ejecutando...");
+                // Aquí simula la redirección hacia una nueva página
+                addLine("Redirigiendo a pagina?.html...");
+            } else {
+                addLine("Contraseña incorrecta.");
+            }
+        }
+
+        // Comando para resolver las acciones
+        function handleCommand(command) {
+            const parts = command.split(" ");
+            const cmd = parts[0];
+            const arg = parts.slice(1).join(" ");
+
+            switch (cmd) {
+                case "ls":
+                    listDirectory();
+                    break;
+                case "cd":
+                    changeDirectory(arg);
+                    break;
+                case "cat":
+                    readFile(arg);
+                    break;
+                case "help":
+                    addLine("Comandos disponibles: ls, cd, cat, decrypt, sudo, decode, execute");
+                    break;
+                case "decrypt":
+                    decryptFile(arg);  // Manejo del comando decrypt
+                    break;
+                case "sudo":
+                    if (arg === "destro7ed") {
+                        sudoDestro7ed();
+                    } else {
+                        addLine("Comando no reconocido.");
+                    }
+                    break;
+                case "decode":
+                    if (arg === "root") {
+                        decodeRoot();
+                    } else {
+                        addLine("Comando no reconocido.");
+                    }
+                    break;
+                case "execute":
+                    executeFile(arg);
+                    break;
+                case "access":
+                    let password = parts[1];
+                    if (parts[0] === "h4ck.exe") {
+                        accessExeFile(password);
+                    } else {
+                        addLine("Comando no reconocido.");
+                    }
+                    break;
+                default:
+                    addLine("Comando no reconocido.");
+           
+                    break;
+            }
+        }
+
+    </script>
+</body>
+</html>
