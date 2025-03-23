@@ -72,7 +72,15 @@
                     "j03lr4m0s": {},
                     "root": {
                         "isEncrypted": true, // Este archivo no debería estar aquí
-                        "new_user.py": "print('Exploit ejecutado con éxito!')",
+                        "new_user.py": "var logger = getLogger("default");
+
+item.setCtgItemAttrib("Default Hierarchy Primary Spec/Name", "Item attribute value set from script");
+logger.loggerInfo(item.getCtgItemAttrib("Default Hierarchy Primary Spec/Name"));
+
+logger.loggerInfo("Java API extension point being invoked to update the same item attribute…");
+runJavaApiExtensionPoint("japi:///uploaded_java_classes:packaged_class_sample.com.ibm.pim.PrePostProcessingFunctionImpl.class");
+
+logger.loggerInfo(item.getEntryAttrib("Default Hierarchy Primary Spec/Name"));.",
                     }
                 }
             }
