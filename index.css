@@ -225,7 +225,8 @@ body {
 }
 
 @media (max-width: 768px) {
-    .parallax__layer-title img {
-        max-width: 60%;
+    .cover-copy {
+        width: 120%;
+        height: auto;
     }
 }
