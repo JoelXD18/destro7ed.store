@@ -98,7 +98,7 @@ body {
 
 .cover-copy {
     position: absolute;
-    top: 15%; /* Ajusta la distancia desde la parte superior */
+    top: 5%; /* Ajusta la distancia desde la parte superior */
     left: 50%; /* Centra la imagen horizontalmente */
     transform: translateX(-50%); /* Corrige el centrado */
     width: auto; /* Ajusta según sea necesario */
