@@ -97,13 +97,14 @@ body {
 }
 
 .cover-copy {
-    object-fit: cover;
-    width: 150%;
-    max-width: none;
-    height: 120%;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 15%; /* Ajusta la distancia desde la parte superior */
+    left: 50%; /* Centra la imagen horizontalmente */
+    transform: translateX(-50%); /* Corrige el centrado */
+    width: auto; /* Ajusta según sea necesario */
+    height: auto; /* Ajusta según sea necesario */
+    max-width: 100%;
+    object-fit: cover;
 }
 
 .parallax__fade {
