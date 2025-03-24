@@ -224,7 +224,7 @@ body {
     object-fit: contain;
 }
 
-@media (max-width: 768px) {
+@media {
     .cover-copy {
         width: 200%;
         height: auto;
