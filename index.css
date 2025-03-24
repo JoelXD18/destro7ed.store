@@ -98,9 +98,9 @@ body {
 
 .cover-copy {
     object-fit: cover;
-    width: 100%;
+    width: 150%;
     max-width: none;
-    height: 100%;
+    height: 120%;
     position: absolute;
     top: 0;
     left: 0;
